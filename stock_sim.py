@@ -3,9 +3,11 @@
 import math
 import matplotlib.pyplot as plt 
 import numpy as np
-import pandas as pd
+from pandas_datareader import data 
 
+apple = data.DataReader('AAPL', 'yahoo', start='1/1/2009')
 
+apple.head()
 
-goog = GOOGLEFINANCE("NASDAQ:GOOG", "price", DATE(2014,1,1), DATE(2014,12,31), "DAILY")
-print(goog)
+time_elapsed = (apple.index[-1] - apple.index[0]).days
+
