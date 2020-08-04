@@ -10,12 +10,10 @@ def getData(stockSym:str, startDate:str, endDate:str):
     stock = data.DataReader(stockSym, 'yahoo', start=startDate, end=endDate)
     return stock
 
-stock = getData(stockSym='AAPL',startDate='6/1/2020',endDate='7/1/2020')['Close']
 
-def predict(ntrials:int = 1000, predictionWindow:int = 21):
-    timeElapsed = (stock.index[-1] - stock.index[0]).days
-    # mean = np.mean(stock, axis=0)[3]
-    # std = np.std(stock,axis=0)[3]
+
+def predict(predictionWindow:int = 21, stockSym:str = 'AAPL'):
+    stock = getData(stockSym,startDate='6/1/2020',endDate='7/1/2020')['Close']
     stockFrame = pd.DataFrame(stock).pct_change()
     mean = stockFrame.mean()
     std = stockFrame.std()
@@ -23,7 +21,7 @@ def predict(ntrials:int = 1000, predictionWindow:int = 21):
 
     
     
-    t = np.linspace(start=0, stop=predictionWindow,num=predictionWindow, dtype=int)
+    t = np.arange(predictionWindow)
     W = np.random.standard_normal(size = predictionWindow) 
     W = np.cumsum(W)
 
@@ -33,22 +31,25 @@ def predict(ntrials:int = 1000, predictionWindow:int = 21):
     #Shock represents the random volatility of a stock's price
     shock = std
 
-    predictions = np.zeros((ntrials, predictionWindow))
+    #initialize empty list for predictions
+    predictions = []
+
     #Set first element of array as most recent price of the given period
-    for i in range(ntrials):
-       predictions[i][0] = mostRecentPrice
+    predictions.append(mostRecentPrice)
  
 
-    for i in range(ntrials):
-        for j in range(predictionWindow):
-            predictions[i][j] = mostRecentPrice * np.exp(drift * t[j] + shock * W[j] )
+    for j in range(predictionWindow):
+        predictions.append(mostRecentPrice * np.exp(drift * t[j] + shock * W[j] ))
     return predictions
  
 
-S = predict(ntrials=5, predictionWindow= 21)
-x = np.linspace(start=0, stop=21,num=21, dtype=int)
-#for i in range(len(S)):
-plt.plot(S)
+def plot_data(ntrials:int = 1000, predictionWindow:int = 21, stockSym:str= 'AAPL'):
+    for i in range(ntrials):
+        S = predict(predictionWindow)
+        plt.plot(np.arange(len(S)), S)
+    plt.title('Simulation of ' + stockSym + ' over ' + str(predictionWindow) + ' days', fontsize=20)
+    plt.xlabel('Days', fontsize=18)
+    plt.ylabel('Price in dollars', fontsize=16)
+    plt.savefig('beautifulStockInformation')
 
-plt.savefig('stackoverflow')
-
+plot_data(100, 10)
