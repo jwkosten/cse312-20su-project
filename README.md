@@ -1,5 +1,5 @@
-We are using Python libraries and google finance API's to simulate stock prices 
+To run the simulations, first make sure to have all of the imported libraries installed. 
 
-https://www.alphavantage.co/documentation/
+Data for this project is acquired using the pandas_datareader library. 
 
-We dont have access to pandas on attu so we have to figure out a different way to do this project download an api
+Once that is done, run ```python3 stock_sim.py``` to run the simulations. Feel free to change any of the date ranges to see simulations of other times. Please see documentation to see what each of the predict functions parameters do. 

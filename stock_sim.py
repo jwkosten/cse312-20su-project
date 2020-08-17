@@ -1,7 +1,7 @@
 
 #============================================================================================================#
 # Written by An Keopradith & Joseph Kosten 
-# This project uses Monte Carlo simulation technique to model possible movements of stock prices
+# This project uses a Monte Carlo simulation technique to model possible movements of stock prices
 #============================================================================================================#
 
 
@@ -54,11 +54,15 @@ def predict(ntrials , stockSym  , startDate_collectData, endDate_collectData , s
     for i in range(ntrials):
         #set the first element of each array to the most recent price
         predictions[i][0] = mostRecentPrice 
-        #Each time we make a new prediction, we want to get a new random sample
+        # Each time we make a new prediction, we want to get a array of random samples from the standard normal of length predictionWindow
         W = np.random.standard_normal(size = predictionWindow) 
-        W = np.cumsum(W) #TODO 
+        # Running sum of random samples from W. Determines the shock of each prediction at time t=j-1
+        # Because we use stationary value predictions[i][0] (most recent price) as our starting point, each iteration uses the sum of standard normal samples
+        # From 0, ... current as the sample to determine the shock of the current prediction. This in effect takes the sum of the shocks from 
+        # predictions 0,... current - 1 and applies it to the most recent price along with its current shock as well
+        W = np.cumsum(W) 
         for j in range(1, predictionWindow):
-            predictions[i][j] = mostRecentPrice * np.exp(drift * t[j - 1] + shock * W[j - 1])
+            predictions[i][j] = predictions[i][0] * np.exp(drift * t[j - 1] + shock * W[j - 1])
     #============================================================================================================#
         #Calculating the simulation results
     Predicted_avg_daily = np.mean(predictions, axis=0)
